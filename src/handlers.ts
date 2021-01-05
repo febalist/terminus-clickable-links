@@ -6,31 +6,47 @@ import {ElectronService} from 'terminus-core';
 import {LinkHandler} from './api';
 
 const untildify = require('untildify');
+const ipRegex = require('ip-regex');
+const tlds = require('tlds');
+
+const options = {exact: true, strict: false};
+const protocol = `(?:(?:[a-z]+:)?//)${options.strict ? '' : '?'}`;
+const auth = '(?:\\S+(?::\\S*)?@)?';
+const ip = ipRegex.v4().source;
+const host = '(?:(?:[a-z\\u00a1-\\uffff0-9][-_]*)*[a-z\\u00a1-\\uffff0-9]+)';
+const domain = '(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*';
+const tld = `(?:\\.${options.strict ? '(?:[a-z\\u00a1-\\uffff]{2,})' : `(?:${tlds.sort((a, b) => b.length - a.length).join('|')})`})\\.?`;
+const port = '(?::\\d{2,5})?';
+const path = '(?:[/?#][^\\s"]*)?';
 
 @Injectable()
 export class URLHandler extends LinkHandler {
-  // From https://daringfireball.net/2010/07/improved_regex_for_matching_urls
-  // See : https://stackoverflow.com/questions/6927719/url-regex-does-not-work-in-javascript
-  regex = /\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?«»“”‘’]))/;
+  // https://github.com/kevva/url-regex
+  regex = new RegExp(`(?:${protocol}|www\\.)${auth}(?:localhost|${ip}|${host}${domain}${tld})${port}${path}`, 'i');
 
-  priority = 5;
+  priority = 7;
 
-  constructor (private electron: ElectronService) {
+  constructor (
+      private electron: ElectronService,
+  ) {
     super();
   }
 
   handle (uri: string) {
+    if (!uri.includes('://')) {
+      uri = 'http://' + uri;
+    }
     this.electron.shell.openExternal(uri);
   }
 }
 
 @Injectable()
 export class UnixFileHandler extends LinkHandler {
-  // Only absolute and home paths
-  regex = /(\/|~)+(\.|)[\w\/.-]+(:\d+)?/;
+  regex = /\B~?\/[\/\w.-]+(:\d+)?/;
+
+  priority = 6;
 
   constructor (
-      //private toastr: ToastrService,
       private electron: ElectronService,
   ) {
     super();
@@ -42,7 +58,7 @@ export class UnixFileHandler extends LinkHandler {
 
   handle (uri: string) {
     const [file, line] = uri.split(':');
-    this.electron.shell.openExternal('phpstorm://open?file=' + file + '&line=' + line);
+    this.electron.shell.openExternal(`phpstorm://open?file=${file}&line=${line}`);
   }
 }
 

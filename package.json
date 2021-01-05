@@ -16,6 +16,8 @@
   },
   "typings": "dist/index.d.ts",
   "dependencies": {
+    "ip-regex": "^4.2.0",
+    "tlds": "^1.216.0",
     "untildify": "^3.0.2"
   },
   "peerDependencies": {
