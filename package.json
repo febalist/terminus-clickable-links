@@ -1,22 +1,26 @@
 {
-  "name": "terminus-clickable-links",
-  "version": "1.0.2",
+  "name": "terminus-phpstorm",
   "description": "Makes URLs and file paths clickable in Terminus",
-  "keywords": [
-    "terminus-plugin"
-  ],
+  "license": "MIT",
+  "author": "febalist",
+  "repository": "febalist/terminus-phpstorm",
+  "version": "1.0.0",
   "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "scripts": {
-    "build": "webpack --progress --color",
-    "watch": "webpack --progress --color --watch",
-    "prepublishOnly": "npm run build"
-  },
   "files": [
     "dist"
   ],
-  "author": "Eugene Pankov",
-  "license": "MIT",
+  "scripts": {
+    "build": "webpack --progress --color",
+    "prepublishOnly": "npm run build",
+    "watch": "webpack --progress --color --watch"
+  },
+  "typings": "dist/index.d.ts",
+  "dependencies": {
+    "untildify": "^3.0.2"
+  },
+  "peerDependencies": {
+    "@angular/core": "^4.0.1"
+  },
   "devDependencies": {
     "@angular/common": "^6.0.7",
     "@angular/core": "^6.0.7",
@@ -35,11 +39,7 @@
     "webpack": "^4.27.1",
     "webpack-cli": "^3.1.2"
   },
-  "peerDependencies": {
-    "@angular/core": "^4.0.1"
-  },
-  "dependencies": {
-    "untildify": "^3.0.2"
-  },
-  "repository": "eugeny/terminus-clickable-links"
+  "keywords": [
+    "terminus-plugin"
+  ]
 }
