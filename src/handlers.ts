@@ -27,7 +27,7 @@ export class URLHandler extends LinkHandler {
 @Injectable()
 export class UnixFileHandler extends LinkHandler {
   // Only absolute and home paths
-  regex = /(\/|~)+(\.|)[\w\/-]+(\.[\w]+|)(:\d+)?/;
+  regex = /(\/|~)+(\.|)[\w\/.-]+(:\d+)?/;
 
   constructor (
       //private toastr: ToastrService,
